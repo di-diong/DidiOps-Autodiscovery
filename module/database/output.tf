@@ -25,10 +25,6 @@ value       = data.vault_generic_secret.vault-secret.data["password"]
 sensitive   = true
 }
 
-output "db_password" {
-  value       = "holder123"
-  sensitive   = true
-}
 
 output "rds_sg_id" {
   description = "Security group ID attached to the RDS instance"
