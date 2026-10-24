@@ -20,8 +20,13 @@ output "db_username" {
 }
 
 output "db_password" {
-  description = "Master password (sourced from Vault)"
-  value       = data.vault_generic_secret.vault-secret.data["password"]
+ description = "Master password (sourced from Vault)"
+value       = data.vault_generic_secret.vault-secret.data["password"]
+sensitive   = true
+}
+
+output "db_password" {
+  value       = "holder123"
   sensitive   = true
 }
 

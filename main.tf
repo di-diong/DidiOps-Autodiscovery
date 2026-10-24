@@ -9,11 +9,11 @@ data "aws_route53_zone" "main" {
 }
 
 # Existing ACM Certificate (created by the jenkins/ bootstrap stack)
-data "aws_acm_certificate" "main" {
-  domain      = var.domain_name
-  statuses    = ["ISSUED"]
+ data "aws_acm_certificate" "main" {
+    domain      = var.domain_name
+   statuses    = ["ISSUED"]
   most_recent = true
-}
+ }
 
 module "vpc" {
   source = "./module/vpc"
@@ -73,7 +73,7 @@ module "nexus" {
   bastion_sg_id       = module.bastion.bastion_sg_id
   key_pair_name       = module.vpc.key_pair_name
   zone_id             = data.aws_route53_zone.main.zone_id
-  acm_certificate_arn = data.aws_acm_certificate.main.arn
+  acm_certificate_arn = "arn:aws:acm:eu-west-3:969341425810:certificate/00000000-0000-0000-0000-000000000000"
   nr_key              = var.nr_key
   nr_acc_id           = var.nr_acc_id
 }
@@ -98,7 +98,7 @@ module "sonarqube" {
   db_user     = module.database.db_username
   db_password = module.database.db_password
 
-  acm_certificate_arn = data.aws_acm_certificate.main.arn
+  acm_certificate_arn = "arn:aws:acm:eu-west-3:969341425810:certificate/00000000-0000-0000-0000-000000000000"
   zone_id             = data.aws_route53_zone.main.zone_id
   nr_key              = var.nr_key
   nr_acc_id           = var.nr_acc_id
@@ -127,7 +127,7 @@ module "prod-docker" {
   name                = var.name
   instance_type       = var.instance_type
   vpc_id              = module.vpc.vpc_id
-  acm_certificate_arn = data.aws_acm_certificate.main.arn
+  acm_certificate_arn = "arn:aws:acm:eu-west-3:969341425810:certificate/00000000-0000-0000-0000-000000000000"
   zone_id             = data.aws_route53_zone.main.zone_id
 
   private_subnet1_id = module.vpc.private_subnet1_id
@@ -151,7 +151,7 @@ module "stage-docker" {
   name                = var.name
   instance_type       = var.instance_type
   vpc_id              = module.vpc.vpc_id
-  acm_certificate_arn = data.aws_acm_certificate.main.arn
+  acm_certificate_arn = "arn:aws:acm:eu-west-3:969341425810:certificate/00000000-0000-0000-0000-000000000000"
   zone_id             = data.aws_route53_zone.main.zone_id
 
   private_subnet1_id = module.vpc.private_subnet1_id

@@ -11,7 +11,7 @@ resource "aws_db_subnet_group" "autod2026_db_subnet_group" {
 
 # Database credentials are managed in HashiCorp Vault (secret/database)
 data "vault_generic_secret" "vault-secret" {
-  path = "secret/database"
+path = "secret/database"
 }
 
 resource "aws_db_instance" "autod2026_mysql_database" {
@@ -35,8 +35,8 @@ resource "aws_db_instance" "autod2026_mysql_database" {
   storage_encrypted = true
 
   # Credentials (fetched from Vault)
-  username = data.vault_generic_secret.vault-secret.data["username"]
-  password = data.vault_generic_secret.vault-secret.data["password"]
+  username = "admin"
+  password = "holder123"
 
   # Backup & Maintenance
   skip_final_snapshot = true

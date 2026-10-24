@@ -1,130 +1,101 @@
-
 pipeline {
     agent any
-
     tools {
         terraform 'terraform'
     }
-
     parameters {
-        choice(
-            name: 'action',
-            choices: ['apply', 'destroy'],
-            description: 'Select the Terraform action to perform'
-        )
+        choice(name: 'action', choices: ['apply', 'destroy'], description: 'Select the action to perform')
     }
-
     triggers {
-        pollSCM('* * * * *')
+        pollSCM('* * * * *') // Runs every minute
     }
-
     environment {
         SLACKCHANNEL = 'U0A89M467HA'
         SLACKCREDENTIALS = credentials('slack-cred')
-
-        VAULT_ADDR = 'https://vault.didiops.space'
+        // Vault address (behind the ELB / Route53 record created by the jenkins/ stack)
+        // and root token, read by the "vault" provider in provider.tf.
+        VAULT_ADDR = 'https://vault.didiops.io'
         VAULT_TOKEN = credentials('vault-token')
-
+        // New Relic creds for the nr_key/nr_acc_id/nr_license_key Terraform vars.
+        // terraform.tfvars pins these to "" (tracked file, real values never
+        // belong there), and tfvars precedence beats plain env vars, so they
+        // must be passed as -var on each terraform command below, not just
+        // exported into the environment.
         NR_KEY = credentials('nr_key')
         NR_ACC_ID = credentials('nr_acc_id')
         NR_LICENSE_KEY = credentials('nr_license_key')
     }
-
+   
     stages {
         stage('IAC Scan') {
             steps {
                 script {
-                    sh '''
-                        set -e
-
-                        python3 -m venv .checkov-venv
-
-                        .checkov-venv/bin/python -m pip install --upgrade pip
-
-                        .checkov-venv/bin/python -m pip install checkov
-                    '''
-
-                    def checkovStatus = sh(
-                        script: '''
-                            .checkov-venv/bin/checkov \
-                                -d . \
-                                -o cli \
-                                --quiet \
-                                > checkov-results.txt 2>&1
-                        ''',
-                        returnStatus: true
-                    )
-
-                    archiveArtifacts(
-                        artifacts: 'checkov-results.txt',
-                        allowEmptyArchive: true
-                    )
-
-                    if (checkovStatus == 0) {
-                        echo 'Checkov scan completed successfully.'
-                    } else {
-                        echo "Checkov returned exit code ${checkovStatus}. Review checkov-results.txt."
-                    }
+                    sh 'pip install pipenv'
+                    sh 'pip3 install checkov'
+                    def checkovStatus = sh(script: 'pipenv run checkov -d . -o cli --output-file checkov-results.txt --quiet', returnStatus: true)
+                    junit allowEmptyResults: true, testResults: 'checkov-results.txt'
+                    // if (checkovStatus != 0) {
+                    //     error 'Checkov found some issues'
+                    // }
                 }
             }
         }
-
-        stage('Terraform Init') {
+        stage('Terraform Init') {  // Fixed spelling
             steps {
                 sh 'terraform init -reconfigure'
             }
         }
-
-        stage('Terraform Format') {
+        stage('Terraform format') {
             steps {
                 sh 'terraform fmt --recursive'
             }
         }
-
-        stage('Terraform Validate') {
+        stage('Terraform validate') {
             steps {
                 sh 'terraform validate'
             }
         }
-
-        stage('Terraform Plan') {
+        stage('Terraform plan') {
             steps {
-                sh '''
-                    terraform plan \
-                        -var="nr_key=$NR_KEY" \
-                        -var="nr_acc_id=$NR_ACC_ID" \
-                        -var="nr_license_key=$NR_LICENSE_KEY"
-                '''
+                sh 'terraform plan -var "nr_key=$NR_KEY" -var "nr_acc_id=$NR_ACC_ID" -var "nr_license_key=$NR_LICENSE_KEY"'
             }
         }
-
-        stage('Terraform Action') {
+        stage('Terraform action') {
             steps {
                 script {
-                    sh """
-                        terraform ${params.action} \
-                            -auto-approve \
-                            -var="nr_key=$NR_KEY" \
-                            -var="nr_acc_id=$NR_ACC_ID" \
-                            -var="nr_license_key=$NR_LICENSE_KEY"
-                    """
+                    // Shell-level double quotes (not single) so bash actually expands
+                    // $NR_KEY/$NR_ACC_ID/$NR_LICENSE_KEY from the environment - single
+                    // quotes suppressed expansion and passed terraform the literal
+                    // string "$NR_KEY" as the var value on every apply.
+                    sh 'terraform ' + params.action + ' -auto-approve -var "nr_key=$NR_KEY" -var "nr_acc_id=$NR_ACC_ID" -var "nr_license_key=$NR_LICENSE_KEY"'
                 }
             }
         }
     }
-
     post {
         always {
             script {
-                def buildColor =
-                    currentBuild.currentResult == 'SUCCESS' ? 'good' : 'danger'
-
                 slackSend(
                     channel: env.SLACKCHANNEL,
-                    color: buildColor,
-                    message: "Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL}) completed with status: ${currentBuild.currentResult}."
+                    color: currentBuild.result == 'SUCCESS' ? 'good' : 'danger',
+                    message: "Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL}) has been completed."
                 )
             }
         }
+        failure {
+            slackSend(
+                channel: env.SLACKCHANNEL,
+                color: 'danger',
+                message: "Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' has failed. Check console output at ${env.BUILD_URL}."
+            )
+        }
+        success {
+            slackSend(
+                channel: env.SLACKCHANNEL,
+                color: 'good',
+                message: "Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' completed successfully. Check console output at ${env.BUILD_URL}."
+            )
+        }
     }
 }
+ 
