@@ -46,3 +46,11 @@ terraform.rc
 # Optional: ignore plan files saved before destroying Terraform configuration
 # Uncomment the line below if you want to ignore planout files.
 # planout
+
+# Downloaded packages
+*.deb
+
+# Environment and local credentials
+.env
+.env.*
+.aws/*.deb

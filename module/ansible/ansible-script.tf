@@ -123,7 +123,7 @@ sudo chown -R ec2-user:ec2-user /home/ec2-user/ansible
 # -------------------------------
 
 sudo tee /home/ec2-user/ansible/ansible_vars_file.yml > /dev/null <<EOF2
-NEXUS_IP: ${var.nexus_ip}:8085
+NEXUS_IP: "${var.nexus_ip}:8085"
 NEW_RELIC_LICENSE_KEY: "${var.nr_license_key}"
 NEW_RELIC_APP_NAME: pet-adoption
 EOF2

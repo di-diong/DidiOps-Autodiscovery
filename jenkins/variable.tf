@@ -16,11 +16,9 @@ variable "region" {
 }
 
 variable "nr_key" {
-  sensitive   = true
-  description = "New Relic User API key (NRAK-...). Set via terraform.tfvars / TF_VAR_nr_key, never hardcode."
+
 }
 
 variable "nr_acc_id" {
-  sensitive   = true
-  description = "New Relic account ID. Set via terraform.tfvars / TF_VAR_nr_acc_id."
+
 }
