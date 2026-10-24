@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+export AWS_PAGER=""
 # set variable for bucket-name
 BUCKET_NAME="autod-state-bucket"
 DYNAMODB_TABLE="autod-state-lock"

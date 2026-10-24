@@ -3,6 +3,9 @@
 
 echo "Deleting S3 bucket"
 
+set -e
+export AWS_PAGER=""
+
 # Using the same variables as the ones used for creation
 BUCKET_NAME="autod-state-bucket"
 DYNAMODB_TABLE="autod-state-lock"
