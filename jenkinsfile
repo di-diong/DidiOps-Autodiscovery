@@ -14,7 +14,7 @@ pipeline {
         SLACKCREDENTIALS = credentials('slack-cred')
         // Vault address (behind the ELB / Route53 record created by the jenkins/ stack)
         // and root token, read by the "vault" provider in provider.tf.
-        VAULT_ADDR = 'https://vault.didiops.io'
+        VAULT_ADDR = 'https://vault.didiops.space'
         VAULT_TOKEN = credentials('vault-token')
         // New Relic creds for the nr_key/nr_acc_id/nr_license_key Terraform vars.
         // terraform.tfvars pins these to "" (tracked file, real values never
