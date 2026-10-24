@@ -83,7 +83,7 @@ variable "availability_zone" {
 
 variable "bucket_name" {
   type    = string
-  default = "autod-s3bucket"
+  default = "autod-state-bucket"
 }
 
 variable "vault_sg_cidr" {
