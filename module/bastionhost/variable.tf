@@ -1,0 +1,10 @@
+variable "name" {}
+variable "bucket_name" {}
+variable "private_key" {}
+variable "nr_key" {}
+variable "nr_acc_id" {}
+variable "instance_type" {}
+variable "public_subnet_id" {}
+variable "key_pair_name" {}
+variable "vpc_id" {}
+variable "region" {}

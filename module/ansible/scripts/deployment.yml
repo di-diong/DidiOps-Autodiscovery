@@ -1,0 +1,43 @@
+---
+- hosts: webservers
+  become: true
+
+  vars_files:
+    - ansible_vars_file.yml
+
+  tasks:
+
+    - name: Ensure Docker SDK for Python is present (required by docker_container/docker_login)
+      ansible.builtin.apt:
+        name: python3-docker
+        state: present
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Log in to Nexus
+      community.docker.docker_login:
+        registry_url: "{{ NEXUS_IP }}"
+        username: admin
+        password: admin123
+      no_log: true
+
+    - name: Ensure application container is running the latest image
+      # docker_container is idempotent: it only pulls/recreates the
+      # container when the image actually changed, instead of tearing
+      # it down on every run - this task runs from cron every minute
+      # (see prod-bashscript.sh/stage-bashscript.sh), and a stop/rm/pull/run
+      # on every tick was bouncing the container (and causing ALB 502s)
+      # once a minute even when nothing had changed.
+      community.docker.docker_container:
+        name: pet-adoption
+        image: "{{ NEXUS_IP }}/petclinicapps:latest"
+        state: started
+        restart_policy: always
+        pull: true
+        recreate: no
+        ports:
+          - "8080:8080"
+        env:
+          NEW_RELIC_LICENSE_KEY: "{{ NEW_RELIC_LICENSE_KEY }}"
+          NEW_RELIC_APP_NAME: "{{ NEW_RELIC_APP_NAME }}"
+      no_log: true

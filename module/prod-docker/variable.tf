@@ -1,0 +1,16 @@
+variable "name" {}
+variable "vpc_id" {}
+variable "instance_type" {}
+variable "key_pair_name" {}
+variable "bastion_sg_id" {}
+variable "ansible_sg_id" {}
+variable "private_subnet1_id" {}
+variable "private_subnet2_id" {}
+variable "public_subnet1_id" {}
+variable "public_subnet2_id" {}
+variable "zone_id" {}
+variable "acm_certificate_arn" {}
+variable "nr_key" {}
+variable "nr_acc_id" {}
+variable "nr_license_key" {}
+variable "nexus_ip" {}
