@@ -112,7 +112,7 @@ resource "aws_instance" "sonarqube" {
 
   iam_instance_profile = aws_iam_instance_profile.sonarqube_profile.name
 
-  user_data = templatefile("${path.module}/user_data.sh", {
+  user_data = templatefile("${path.module}/userdata.sh", {
     db_host     = var.db_host
     db_name     = var.db_name
     db_user     = var.db_user
