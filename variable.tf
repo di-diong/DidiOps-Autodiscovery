@@ -63,12 +63,12 @@ variable "pub_subnet2_az" {
 
 variable "priv_subnet1_az" {
   type    = string
-  default = "eu-west-3c"
+  default = "eu-west-3a"
 }
 
 variable "priv_subnet2_az" {
   type    = string
-  default = "eu-west-3d"
+  default = "eu-west-3b"
 }
 
 variable "vpc_cidr_block" {
