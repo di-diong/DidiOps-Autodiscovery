@@ -54,21 +54,21 @@ The project uses separate GitHub repositories for infrastructure and application
 |-- provider.tf              # AWS provider and Terraform backend configuration
 |-- variables.tf             # Input variable definitions
 |-- outputs.tf               # Terraform outputs
-|-- Jenkinsfile              # CI/CD pipeline definition, where present
-|-- scripts/                 # Automation and Auto-Discovery scripts
+|-- create-s3-bucket.sh      # Create remote state
+|-- delete-s3-bucket,sh      # Delete remote state
 |-- ansible/                 # Ansible inventory, playbooks, and configuration
 |-- modules/                 # Reusable Terraform modules
 |   |-- vpc/                 # VPC, subnet, gateway, and routing resources
-|   |-- jenkins/             # Jenkins infrastructure
-|   |-- vault/               # Vault infrastructure
+|   |-- jenkins/             # Jenkins infrastructure/vault infrastucture
+|   |-- database/            # Provides the application database.
 |   |-- nexus/               # Nexus infrastructure
+|   |-- ansible/             # Ansible inventory, playbooks, and configuration
 |   |-- sonarqube/           # SonarQube infrastructure
-|   |-- staging/             # Staging environment resources
-|   `-- production/          # Production environment resources
+|   |-- stage/               # Staging environment resources
+|   `-- prod/                # Production environment resources
 `-- README.md                # Project documentation
 ```
 
-*Note: This is an illustrative structure. Adjust the names to match the actual files and module directories in your repository.*
 
 ## Terraform State
 
@@ -94,7 +94,7 @@ Before applying this project, make sure you have:
 - Jenkins configured with the required plugins, credentials, and webhook integrations.
 - Ansible and Docker configured for the deployment workflow.
 - Maven and a compatible Java version for building the application.
-- Valid Route 53 hosted-zone and ACM certificate configuration for HTTPS endpoints.
+- Valid Route 53 hosted zone and ACM certificate configuration for HTTPS endpoints.
 - Required integrations configured for SonarQube, Nexus, Vault, New Relic, and Slack.
 
 ## Usage
