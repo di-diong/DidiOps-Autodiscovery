@@ -55,13 +55,13 @@ The project uses separate GitHub repositories for infrastructure and application
 |-- provider.tf              # AWS provider and Terraform backend configuration
 |-- variables.tf             # Input variable definitions
 |-- outputs.tf               # Terraform outputs
+-- jenkins/                  # Jenkins and Vault infrastructure
 |-- Jenkinsfile              # Jenkins CI/CD pipeline
 |-- create-s3-bucket.sh      # Create remote state resources
 |-- delete-s3-bucket.sh      # Delete remote state resources
 |-- modules/                 # Reusable Terraform modules
 |   |-- vpc/                 # VPC, subnets, gateways, and routing
 |   |-- bastion/             # Bastion host and access configuration
-|   |-- jenkins/             # Jenkins and Vault infrastructure
 |   |-- database/            # Application database resources
 |   |-- nexus/               # Nexus infrastructure
 |   |-- ansible/             # Ansible configuration and deployment
