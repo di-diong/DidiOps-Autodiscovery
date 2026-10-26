@@ -50,22 +50,24 @@ The project uses separate GitHub repositories for infrastructure and application
 
 ```text
 .
+.
 |-- main.tf                  # Root Terraform configuration
 |-- provider.tf              # AWS provider and Terraform backend configuration
 |-- variables.tf             # Input variable definitions
 |-- outputs.tf               # Terraform outputs
-|-- create-s3-bucket.sh      # Create remote state
-|-- delete-s3-bucket,sh      # Delete remote state
-|-- ansible/                 # Ansible inventory, playbooks, and configuration
+|-- Jenkinsfile              # Jenkins CI/CD pipeline
+|-- create-s3-bucket.sh      # Create remote state resources
+|-- delete-s3-bucket.sh      # Delete remote state resources
 |-- modules/                 # Reusable Terraform modules
-|   |-- vpc/                 # VPC, subnet, gateway, and routing resources
-|   |-- jenkins/             # Jenkins infrastructure/vault infrastucture
-|   |-- database/            # Provides the application database.
+|   |-- vpc/                 # VPC, subnets, gateways, and routing
+|   |-- bastion/             # Bastion host and access configuration
+|   |-- jenkins/             # Jenkins and Vault infrastructure
+|   |-- database/            # Application database resources
 |   |-- nexus/               # Nexus infrastructure
-|   |-- ansible/             # Ansible inventory, playbooks, and configuration
+|   |-- ansible/             # Ansible configuration and deployment
 |   |-- sonarqube/           # SonarQube infrastructure
-|   |-- stage/               # Staging environment resources
-|   `-- prod/                # Production environment resources
+|   |-- stage-docker/        # Staging environment resources
+|   `-- prod-docker/         # Production environment resources
 `-- README.md                # Project documentation
 ```
 
